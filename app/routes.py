@@ -14,6 +14,11 @@ def product(product_id):
     product = Product.query.get_or_404(product_id)
     return render_template('product.html', product=product)
 
+@app.route("/products")
+def products():
+    all_products = Product.query.all()
+    return render_template('products.html', products=all_products)
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()

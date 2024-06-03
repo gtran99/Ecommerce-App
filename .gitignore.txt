@@ -1,6 +1,0 @@
-ecommerce-env/
-instance/
-__pycache__/
-*.pyc
-*.pyo
-.env
