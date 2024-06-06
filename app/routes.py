@@ -1,7 +1,17 @@
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, session, request
+from functools import wraps
 from app import app, db
 from app.models import User, Product
 from app.forms import RegistrationForm, LoginForm
+
+# Define the login_required decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route("/")
 @app.route("/home")
@@ -36,8 +46,22 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.password == form.password.data:
+            session['user_id'] = user.id  # Set the user_id in session
             flash('Logged in successfully!', 'success')
             return redirect(url_for('home'))
         else:
             flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+@app.route("/logout")
+def logout():
+    session.pop('user_id', None)  # Clear the user_id from session
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('home'))
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    # Your protected route logic here
+    return render_template('dashboard.html')
+
