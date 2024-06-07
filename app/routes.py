@@ -62,6 +62,23 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    # Your protected route logic here
-    return render_template('dashboard.html')
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    return render_template('dashboard.html', user=user)
 
+@app.route("/settings")
+@login_required
+def settings():
+    return render_template('settings.html')
+
+@app.route("/delete_account", methods=['POST'])
+@login_required
+def delete_account():
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        session.pop('user_id', None)
+        flash('Your account has been deleted.', 'info')
+    return redirect(url_for('home'))
