@@ -37,11 +37,15 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
 
-      - name: Set up database
+      - name: Initialize database
         run: |
           source venv/bin/activate
           sudo apt-get install -y libpq-dev
           pip install psycopg2
+          if [ ! -d "migrations" ]; then
+            flask db init
+            flask db migrate -m "Initial migration."
+          fi
           flask db upgrade
 
       - name: Run tests
