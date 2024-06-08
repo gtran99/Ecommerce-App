@@ -39,6 +39,7 @@ jobs:
 
       - name: Set up database
         run: |
+          python -m venv venv
           sudo apt-get install -y libpq-dev
           pip install psycopg2
           flask db upgrade
